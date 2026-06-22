@@ -1,0 +1,22 @@
+                                           Bonus:
+In arhitectura actuala, exista un interval de timp in care un student trebuie sa dea submit, [dataInceput, dataFinal], pentru a-i fi luat in calcul examenul. Altfel, punctajul devine 0.0.
+
+-> As adauga functionalitatea noua de a verifica intervalul de timp in care studentul raspunde la fiecare intrebare in parte (de exemplu prin metoda submitBoundsCheckPerQuestion() adaugata in Exam.java):
+   - daca studentul raspunde in intervalul stabilit la intrebarea curenta, ar putea trece la rezolvarea urmatoarei intrebari;
+   - daca studentul nu raspunde in acest interval, examenul s-ar incheia cu scorul pe care il adunase pana la intrebarea precedenta. Aceasta idee poate fi implementata prin adaugarea unei noi exceptii (SubmissionOutsideTimeIntervalForQuestionException()) care se arunca in cazul neincadrarii in timpul alocat per intrebare;
+   - se poate realiza inca o metoda suplimentara in cadrul clasei Exam.java (de exemplu checkBonus()), in care sa se atribuie un bonus studentilor care raspund corect la intrebare in jumatate (sau mai putin de jumatate) din timpul alocat pentru fiecare intrebare. Bonusul se atribuie pentru fiecare astfel de intrebare rezolvata in mai putin de jumatate din timpul alocat acesteia (sau exact jumatate). In implementarea acestei functionalitati, trebuie actualizat si sistemul de grade, astfel incat la punctajul total al studentului pentru examen sa se adauge toate bonusurile acumulate de acesta, in cazul in care se incadreaza in cerintele pentru bonus.
+
+-> Detalii despre implementare:
+
+- pentru submitBoundsCheckPerQuestion() din Exam.java: ca sa putem verifica intervalul de timp in care studentul poate raspunde la intrebare, ar fi necesar sa verificam dificultatea intrebarii si am putea imparti intrebarile pe categorii in functie de dificultate (intrebarile cu dificultate mica sa aiba interval mic (de exemplu 2 minute), iar pe masura ce progresam spre cele mai dificile intrebari sa crestem si intervalul de timp cu cate 1 minut). De asemenea, in cazul in care nu este respectat acest interval, restul intrebarilor sunt punctate automat cu 0.0 si, practic, scorul final este dat de ceea ce a reusit studentul sa rezolve pana in momentul in care nu a mai fost respectat intervalul intrebarii;
+
+- pentru SubmissionOutsideTimeIntervalForQuestionException() : aceasta poate fi implementata astfel in cat sa afiseze urmatorul format: timestampFormatat + " | Submission outside of time interval for question " + textIntrebare;
+
+- pentru checkBonus() din Exam.java: bonusul poate fi implementat ca un element extra, independent de interfata Gradable. Interfata se refera doar la corectitudine, in timp ce bonusul este acordat in plus, in functie de performatele studentului la examen.
+
+- de asemenea, pentru a putea masura timpul pe care studentul il petrece rezolvand intrebarea, am putea introduce timestamp per raspuns in cadrul submit_exam (formatul ar putea include "raspuns1 | timestamp1 | raspuns2 | timestamp2 | ..."). Timpul pe care studentul l-a petrecut rezolvand prima intrebare se masoara ca diferenta intre dataStart a examenului si timestamp-ul curent al intrebarii, iar pentru urmatoarele intrebari se masoara intre cele 2 timestamp-uri ale intrebarilor. Bonusul ce se adauga eventual reprezinta 15% din punctajul intrebarii respective. Acesta se acorda pentru raspuns corect in maxim jumatate din timpul alocat per intrebare si punctajul total obtinut de student (incluzand bonusul) se va trunchia la nota maxima.
+
+-> De exemplu, sa presupunem ca studentul se afla la Question4 si timpul alocat pentru aceasta intrebare este de 4 minute:
+   - daca studentul nu se incadreaza in cele 4 minute, examenul se incheie cu scorul pe care studentul l-a acumulat de la Question1 pana la Question3 (inclusiv). Altfel, daca a rezolvat corect intrebarea in maxim 2 minute, primeste bonusul aferent acestei intrebari si poate continua cu Question5, iar daca termina de rezolvat in mai mult de 2 dar mai putin de 4 minute, poate trece simplu la rezolvarea urmatoarei intrebari, fara a primi bonusul pentru intrebarea curenta, dar fiind posibil scenariul in care primeste bonus pentru urmatoarea intrebare.
+
+Aceasta functionalitate suplimentara ar veni ca o completare a sistemului actual, fiind compatibila cu acesta.
