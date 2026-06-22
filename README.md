@@ -1,4 +1,4 @@
-# Java exam management platform:
+# Java exam management platform
 I implemented the following functionalities:
 - Main class: where I read and parsed the commands, which implements each functionality in Platform.java;
 - Platform class: depending on each command, performs the necessary operations (for example, create_exam, add_question etc.);
